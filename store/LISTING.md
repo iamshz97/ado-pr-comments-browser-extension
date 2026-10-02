@@ -62,7 +62,7 @@ Data types handled: **Personally identifiable information** (reviewer display na
 
 ## Privacy policy URL
 
-Host `PRIVACY.md` publicly and paste its URL here.
+https://__OWNER__.github.io/ado-pr-comments-for-llm/privacy.html
 
 ## Notes for reviewers (Edge "Notes for certification")
 
