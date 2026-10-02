@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Privacy Policy · Copy Azure DevOps PR Comments for LLM</title>
+  <meta name="description" content="Privacy policy for the Copy Azure DevOps PR Comments for LLM browser extension. No data is collected or transmitted.">
+  <link rel="icon" href="icon.png">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="doc">
+    <a class="back" href="./">← Copy Azure DevOps PR Comments for LLM</a>
+    <h1>Privacy Policy</h1>
+    <p class="meta">Last updated: 2 October 2026</p>
+
+    <p class="lead">This extension does not collect, store, sell or transmit any personal data.</p>
+
+    <h2>What the extension accesses</h2>
+    <p>When you click the extension on an Azure DevOps pull request page, it reads:</p>
+    <ul>
+      <li>the pull request's comment threads and title, from the Azure DevOps REST API</li>
+      <li>your Azure DevOps display name and user ID (<code>_apis/connectionData</code>), so it can tell your comments apart from reviewers' comments</li>
+    </ul>
+    <p>These requests are made from the Azure DevOps tab you are viewing, using your existing Azure DevOps session. They go only to the Azure DevOps organization you are already signed in to.</p>
+
+    <h2>What happens to that data</h2>
+    <ul>
+      <li>It is processed entirely inside your browser to build the summary shown in the popup.</li>
+      <li>It is copied to your clipboard only when you click <strong>Copy</strong>.</li>
+      <li>It is never sent to the developer or to any third party, and there are no analytics or tracking.</li>
+      <li>It is discarded when the popup closes.</li>
+    </ul>
+
+    <h2>What is stored</h2>
+    <p>Only your preferences, saved in your browser's extension storage (<code>chrome.storage.local</code>): the state of the "Hide reviewer names" and "Hide my comments" toggles, and a display name, if you enter one by hand. This data never leaves your device. Removing the extension deletes it.</p>
+
+    <h2>Permissions</h2>
+    <ul>
+      <li><code>activeTab</code>: read the pull request you are viewing, only when you click the extension.</li>
+      <li><code>scripting</code>: run the comment request inside that tab so it uses your existing sign-in.</li>
+      <li><code>storage</code>: remember your preferences.</li>
+    </ul>
+
+    <h2>Changes</h2>
+    <p>If this policy changes, the updated version will be published on this page with a new date.</p>
+
+    <h2>Contact</h2>
+    <p>Questions: <a href="mailto:shaznishiraz@gmail.com">shaznishiraz@gmail.com</a></p>
+  </main>
+</body>
+</html>
