@@ -3,7 +3,6 @@ import { parsePrUrl, buildModel, toMarkdown, STATUS_LABEL } from './ado.js';
 const DEFAULTS = { anonymize: true, hideMine: true, myName: '' };
 
 const ICONS = {
-  refresh: '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M13.5 8a5.5 5.5 0 1 1-1.6-3.9M13.5 2.5v3h-3" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>',
   copy: '<svg viewBox="0 0 16 16" aria-hidden="true"><rect x="5" y="5" width="8.5" height="8.5" rx="2" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M10.5 3.5v-.5a1.5 1.5 0 0 0-1.5-1.5H4A1.5 1.5 0 0 0 2.5 3v5A1.5 1.5 0 0 0 4 9.5h.5" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>',
   check: '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8.5l3 3 7-7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>',
   bubble: '<svg viewBox="0 0 48 48" aria-hidden="true"><path d="M10 9h28a5 5 0 0 1 5 5v15a5 5 0 0 1-5 5H22l-8 6v-6h-4a5 5 0 0 1-5-5V14a5 5 0 0 1 5-5z" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round"/><path d="M14 18h20M14 25h12" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></svg>',
@@ -98,7 +97,7 @@ function renderLoading() {
       <div class="sk sk-line" style="width:30%"></div>
       <div class="sk sk-line sk-lg" style="width:85%"></div>
       <div class="sk sk-line" style="width:45%"></div>
-      <div class="sk-row">${'<div class="sk sk-tile"></div>'.repeat(4)}</div>
+      <div class="sk-row">${'<div class="sk sk-tile"></div>'.repeat(3)}</div>
       <div class="sk sk-block"></div>
       <div class="sk sk-block"></div>
     </div>`;
@@ -111,8 +110,16 @@ function renderError({ auth, error }) {
       <h1>${auth ? 'Sign in to Azure DevOps' : 'Couldn’t load comments'}</h1>
       <p>${auth ? 'Your session in this tab looks signed out. Sign in, then retry.' : esc(error ?? 'Something went wrong.')}</p>
       <button class="secondary" id="retry">Try again</button>
+      <p class="state-hint">
+        Still not working? <button class="link" id="reload-tab">Reload the page</button>,
+        then open this again.
+      </p>
     </div>`;
   $('#retry').onclick = load;
+  $('#reload-tab').onclick = () => {
+    chrome.tabs.reload(tab.id);
+    window.close();
+  };
 }
 
 function renderMain() {
@@ -124,7 +131,6 @@ function renderMain() {
       <div class="head-row">
         <span class="eyebrow">PR #${pr.id}</span>
         ${prState ? `<span class="badge badge-${esc(prState)}">${esc(prState)}</span>` : ''}
-        <button class="icon-btn" id="refresh" title="Refresh" aria-label="Refresh">${ICONS.refresh}</button>
       </div>
       <h1 class="title" title="${esc(title)}">${esc(title)}</h1>
       <p class="crumbs">${esc(pr.project)}<span>/</span>${esc(pr.repo)}</p>
@@ -133,12 +139,12 @@ function renderMain() {
     <section class="stats" id="stats"></section>
 
     <section class="panel">
-      ${toggle('anonymize', 'Anonymize names')}
-      ${toggle('hideMine', 'Hide my comments')}
+      ${toggle('anonymize', 'Hide reviewer names', 'Shown as Reviewer #1, Reviewer #2…')}
+      ${toggle('hideMine', 'Hide my comments', 'Only reviewer comments get copied')}
     </section>
 
     <section class="block" id="people-block">
-      <h2>Reviewers <span class="hint">tap to exclude</span></h2>
+      <h2>Reviewers</h2>
       <div class="chips" id="people"></div>
     </section>
 
@@ -152,7 +158,6 @@ function renderMain() {
       <div class="who" id="who"></div>
     </footer>`;
 
-  $('#refresh').onclick = load;
   $('#copy').onclick = copy;
   document.querySelectorAll('input[data-setting]').forEach((input) => {
     input.onchange = () => save({ [input.dataset.setting]: input.checked });
@@ -173,9 +178,9 @@ function renderMain() {
   update();
 }
 
-function toggle(key, label) {
+function toggle(key, label, hint) {
   return `
-    <label class="row">
+    <label class="row" title="${hint}">
       <span>${label}</span>
       <input type="checkbox" class="switch" data-setting="${key}">
     </label>`;
@@ -195,13 +200,12 @@ function update() {
     [stats.threads, 'Unresolved'],
     [stats.comments, 'Comments'],
     [stats.reviewers, 'Reviewers'],
-    [stats.files, 'Files'],
   ].map(([n, label]) => `<div class="stat"><b>${n}</b><span>${label}</span></div>`).join('');
 
   $('#people-block').hidden = people.length === 0;
   $('#people').innerHTML = people.map((p) => `
     <button class="chip" data-key="${esc(p.key)}" aria-pressed="${!p.excluded}"
-            title="${esc(p.name)}${p.excluded ? ' — excluded' : ''}">
+            title="${esc(p.name)} · click to ${p.excluded ? 'include' : 'exclude'}">
       <span class="avatar" style="--h:${hue(p.key)}">${esc(initials(p.label))}</span>
       <span class="chip-text">
         <span class="chip-name">${esc(p.label)}</span>
@@ -244,9 +248,10 @@ function threadItem(t) {
 
 function renderWho() {
   const who = $('#who');
-  const current = me();
-  who.innerHTML = current?.name
-    ? `<span>You are <b>${esc(current.name)}</b></span><button class="link" id="edit-me">change</button>`
+  // Only surface this when detection failed or the user has overridden it.
+  who.hidden = !!data.me?.name && !settings.myName;
+  who.innerHTML = settings.myName
+    ? `<span>Using <b>${esc(settings.myName)}</b> as you</span><button class="link" id="edit-me">change</button>`
     : `<span>Couldn’t detect you.</span><button class="link" id="edit-me">Set your name</button>`;
   $('#edit-me').onclick = () => {
     who.innerHTML = `<input id="me-input" placeholder="Your Azure DevOps display name" value="${esc(settings.myName)}">`;

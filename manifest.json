@@ -1,12 +1,12 @@
 {
   "manifest_version": 3,
-  "name": "PR Comments for Azure DevOps",
+  "name": "Copy Azure DevOps PR Comments for LLM",
   "short_name": "PR Comments",
-  "version": "0.1.0",
-  "description": "Summarize Azure DevOps pull request review comments and copy them, anonymized, straight into an LLM.",
+  "version": "1.0.0",
+  "description": "Copy the unresolved review comments from an Azure DevOps pull request as clean, AI-ready Markdown. Runs locally.",
   "action": {
     "default_popup": "src/popup.html",
-    "default_title": "PR Comments",
+    "default_title": "Copy Azure DevOps PR Comments for LLM",
     "default_icon": {
       "16": "icons/icon-16.png",
       "32": "icons/icon-32.png",
@@ -24,7 +24,7 @@
   "commands": {
     "_execute_action": {
       "suggested_key": { "default": "Alt+Shift+C" },
-      "description": "Open PR Comments"
+      "description": "Open the PR comments popup"
     }
   }
 }

@@ -148,11 +148,10 @@ export function buildModel(rawThreads, { me, anonymize, hideMine, excluded }) {
 
   const comments = visible.reduce((sum, t) => sum + t.comments.length, 0);
   const reviewers = new Set(visible.flatMap((t) => t.comments.filter((c) => !c.isMe).map((c) => c.key)));
-  const files = new Set(visible.map((t) => t.file).filter(Boolean));
 
   return {
     threads: visible,
-    stats: { threads: visible.length, comments, reviewers: reviewers.size, files: files.size },
+    stats: { threads: visible.length, comments, reviewers: reviewers.size },
     people: [...people.values()]
       .filter((p) => !p.isMe && p.count > 0)
       .sort((a, b) => b.count - a.count)
