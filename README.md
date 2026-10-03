@@ -1,5 +1,7 @@
 # Copy Azure DevOps PR Comments for LLM
 
+[![Available on Microsoft Edge Add-ons](https://img.shields.io/badge/Microsoft%20Edge-Get%20the%20add--on-0078D7?logo=microsoftedge&logoColor=white)](https://microsoftedge.microsoft.com/addons/detail/copy-azure-devops-pr-comm/jihigokllppgedifbecflklhfdammgbg)
+
 A small browser extension that copies the unresolved review comments on an Azure DevOps pull request as clean Markdown, ready to paste into ChatGPT, Claude, Copilot or any other AI agent.
 
 ## Features
@@ -14,7 +16,11 @@ A small browser extension that copies the unresolved review comments on an Azure
 
 Only threads with at least one comment from someone else are included. System comments and deleted comments are skipped.
 
-## Install (unpacked)
+## Install
+
+**Microsoft Edge:** [install from Microsoft Edge Add-ons](https://microsoftedge.microsoft.com/addons/detail/copy-azure-devops-pr-comm/jihigokllppgedifbecflklhfdammgbg).
+
+## Install from source (unpacked)
 
 1. Open `chrome://extensions` (or `edge://extensions`).
 2. Turn on **Developer mode**.
